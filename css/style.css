@@ -157,9 +157,14 @@ img {
 }
 
 .boton-vacio-oscuro {
-  border: 2px solid var(--borde);
-  color: var(--plata);
+  border: 2px solid var(--negro);
+  color: var(--negro);
   background: transparent;
+}
+
+.boton-vacio-oscuro:hover {
+  background-color: var(--negro);
+  color: var(--blanco);
 }
 
 .boton-login {

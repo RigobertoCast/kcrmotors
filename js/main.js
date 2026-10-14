@@ -60,7 +60,7 @@
     heroTexto: "Autos usados y seminuevos seleccionados, con revisión técnica y financiamiento a tu medida. Encuentra tu próximo vehículo con la confianza que buscas.",
     nosotros: "En KCR Motors nos dedicamos a la compra y venta de vehículos usados y seminuevos en Chile. Nuestro compromiso es ofrecer autos en buen estado, con historial claro y precios justos, para que comprar un auto sea una experiencia simple y segura.\nCada vehículo de nuestro stock pasa por una revisión previa antes de publicarse. Además, te acompañamos en todo el proceso: asesoría, financiamiento y transferencia, para que solo te preocupes de elegir tu próximo auto.",
     contacto: "¿Quieres más información sobre un vehículo, financiamiento o agendar una visita? Envíanos un mensaje.",
-    telefono: "+56983555364",
+    telefono: "+56977289537",
     email: "r.nexus.19@gmail.com",
     direccion: "Santiago, Chile"
   };
@@ -636,7 +636,7 @@
     if (!config) {
       config = Object.assign({}, CONFIG_INICIAL);
     }
-    if (!config.telefono || config.telefono === "+56 9 1234 5678") {
+    if (!config.telefono || config.telefono === "+56 9 1234 5678" || config.telefono === "+56983555364") {
       config.telefono = CONFIG_INICIAL.telefono;
     }
     guardar(CLAVE_CONFIG, config);
