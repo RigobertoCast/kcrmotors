@@ -258,9 +258,10 @@
             </select>
           </div>
           <div class="campo">
-            <label for="v-imagen">Imagen del vehículo</label>
-            <input type="file" id="v-imagen" accept="image/*">
-            <input type="url" id="v-imagen-url" placeholder="o pega una URL de imagen (https://...)">
+            <label for="v-imagen">Imágenes del vehículo (máximo 10)</label>
+            <input type="file" id="v-imagen" accept="image/*" multiple>
+            <input type="url" id="v-imagen-url" placeholder="o pega una URL de imagen (https://...) y presiona Enter">
+            <div class="galeria-form" id="galeria-form"></div>
           </div>
           <div class="campo">
             <label for="v-descripcion">Descripción</label>

@@ -60,7 +60,7 @@
     heroTexto: "Autos usados y seminuevos seleccionados, con revisión técnica y financiamiento a tu medida. Encuentra tu próximo vehículo con la confianza que buscas.",
     nosotros: "En KCR Motors nos dedicamos a la compra y venta de vehículos usados y seminuevos en Chile. Nuestro compromiso es ofrecer autos en buen estado, con historial claro y precios justos, para que comprar un auto sea una experiencia simple y segura.\nCada vehículo de nuestro stock pasa por una revisión previa antes de publicarse. Además, te acompañamos en todo el proceso: asesoría, financiamiento y transferencia, para que solo te preocupes de elegir tu próximo auto.",
     contacto: "¿Quieres más información sobre un vehículo, financiamiento o agendar una visita? Envíanos un mensaje.",
-    telefono: "+56 9 1234 5678",
+    telefono: "+56983555364",
     email: "r.nexus.19@gmail.com",
     direccion: "Santiago, Chile"
   };
@@ -68,7 +68,7 @@
   var vehiculos = [];
   var config = {};
   var sesion = null;
-  var imagenCargada = null;
+  var imagenesCargadas = [];
   var vehiculoEnEdicion = null;
 
   function leer(clave, respaldo) {
@@ -130,12 +130,23 @@
     return lista;
   }
 
+  function imagenesDe(v) {
+    if (v && v.imagenes && v.imagenes.length) return v.imagenes;
+    if (v && v.imagen && v.imagen !== IMAGEN_PLACEHOLDER) return [v.imagen];
+    return [];
+  }
+
+  function portada(v) {
+    var ims = imagenesDe(v);
+    return ims.length ? ims[0] : IMAGEN_PLACEHOLDER;
+  }
+
   function tarjetaVehiculo(v) {
     var insignia = v.destacado ? '<span class="insignia">Destacado</span>' : "";
     return '' +
       '<article class="tarjeta-vehiculo" data-id="' + escapar(v.id) + '">' +
         '<div class="vehiculo-imagen">' + insignia +
-          '<img src="' + escapar(v.imagen || IMAGEN_PLACEHOLDER) + '" alt="' + escapar(v.marca + " " + v.modelo) + '">' +
+          '<img src="' + escapar(portada(v)) + '" alt="' + escapar(v.marca + " " + v.modelo) + '">' +
         '</div>' +
         '<div class="vehiculo-cuerpo">' +
           '<span class="vehiculo-marca">' + escapar(v.marca) + '</span>' +
@@ -192,8 +203,16 @@
     var tel = (config.telefono || "").replace(/[^0-9+]/g, "");
     var mensaje = encodeURIComponent("Hola KCR Motors, me interesa el " + v.marca + " " + v.modelo + " " + v.anio + ".");
     var detalle = document.getElementById("detalle-vehiculo");
+    var ims = imagenesDe(v);
+    if (!ims.length) ims = [IMAGEN_PLACEHOLDER];
+    var galeria = ims.length > 1
+      ? '<div class="detalle-galeria">' + ims.map(function (src, idx) {
+          return '<button type="button" class="detalle-mini' + (idx === 0 ? " activa" : "") + '" data-indice="' + idx + '"><img src="' + escapar(src) + '" alt=""></button>';
+        }).join("") + '</div>'
+      : "";
     detalle.innerHTML = '' +
-      '<img src="' + escapar(v.imagen || IMAGEN_PLACEHOLDER) + '" alt="' + escapar(v.marca + " " + v.modelo) + '">' +
+      '<img class="detalle-imagen-principal" src="' + escapar(ims[0]) + '" alt="' + escapar(v.marca + " " + v.modelo) + '">' +
+      galeria +
       '<span class="vehiculo-marca">' + escapar(v.marca) + '</span>' +
       '<h2>' + escapar(v.modelo) + '</h2>' +
       '<div class="detalle-precio">' + formatoPrecio(v.precio) + '</div>' +
@@ -210,6 +229,16 @@
         '<a class="boton boton-claro" href="https://wa.me/' + escapar(tel.replace(/\D/g, "")) + '?text=' + mensaje + '" target="_blank" rel="noopener">Consultar por WhatsApp</a>' +
         '<a class="boton boton-vacio-oscuro" href="#contacto" data-cerrar-modal="modal-vehiculo">Dejar mensaje</a>' +
       '</div>';
+
+    var principal = detalle.querySelector(".detalle-imagen-principal");
+    var miniaturas = detalle.querySelectorAll(".detalle-mini");
+    for (var k = 0; k < miniaturas.length; k++) {
+      miniaturas[k].addEventListener("click", function () {
+        principal.src = ims[Number(this.getAttribute("data-indice"))];
+        for (var m = 0; m < miniaturas.length; m++) miniaturas[m].classList.remove("activa");
+        this.classList.add("activa");
+      });
+    }
 
     var enlace = detalle.querySelector("[data-cerrar-modal]");
     if (enlace) {
@@ -242,7 +271,7 @@
     tabla.innerHTML = vehiculos.map(function (v) {
       return '' +
         '<div class="fila-vehiculo">' +
-          '<img src="' + escapar(v.imagen || IMAGEN_PLACEHOLDER) + '" alt="' + escapar(v.marca + " " + v.modelo) + '">' +
+          '<img src="' + escapar(portada(v)) + '" alt="' + escapar(v.marca + " " + v.modelo) + '">' +
           '<div class="fila-vehiculo-info">' +
             '<strong>' + escapar(v.marca + " " + v.modelo) + '</strong>' +
             '<span>' + escapar(v.anio) + ' · ' + formatoNumero(v.km) + ' km · ' + formatoPrecio(v.precio) + '</span>' +
@@ -286,9 +315,10 @@
     document.getElementById("v-tipo").value = v.tipo || "Sedán";
     document.getElementById("v-descripcion").value = v.descripcion || "";
     document.getElementById("v-destacado").checked = !!v.destacado;
-    imagenCargada = v.imagen || null;
+    imagenesCargadas = imagenesDe(v).slice(0, 10);
     document.getElementById("v-imagen").value = "";
     document.getElementById("v-imagen-url").value = "";
+    renderGaleriaForm();
     document.getElementById("btn-cancelar-edicion").hidden = false;
     document.getElementById("mensaje-vehiculo").textContent = "";
     document.getElementById("formulario-vehiculo").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -296,18 +326,26 @@
 
   function limpiarFormularioVehiculo() {
     vehiculoEnEdicion = null;
-    imagenCargada = null;
+    imagenesCargadas = [];
     document.getElementById("titulo-form-vehiculo").textContent = "Publicar vehículo";
     document.getElementById("formulario-vehiculo").reset();
     document.getElementById("vehiculo-id").value = "";
     document.getElementById("btn-cancelar-edicion").hidden = true;
     document.getElementById("mensaje-vehiculo").textContent = "";
+    renderGaleriaForm();
   }
 
   function guardarVehiculo(evento) {
     evento.preventDefault();
     var mensaje = document.getElementById("mensaje-vehiculo");
     var urlImagen = document.getElementById("v-imagen-url").value.trim();
+    if (urlImagen) {
+      agregarImagen(urlImagen);
+      document.getElementById("v-imagen-url").value = "";
+    }
+
+    var imagenes = imagenesCargadas.slice(0, 10);
+    if (!imagenes.length) imagenes = [IMAGEN_PLACEHOLDER];
 
     var datos = {
       marca: document.getElementById("v-marca").value.trim(),
@@ -321,7 +359,8 @@
       tipo: document.getElementById("v-tipo").value,
       descripcion: document.getElementById("v-descripcion").value.trim(),
       destacado: document.getElementById("v-destacado").checked,
-      imagen: urlImagen || imagenCargada || IMAGEN_PLACEHOLDER
+      imagenes: imagenes,
+      imagen: imagenes[0]
     };
 
     if (!datos.marca || !datos.modelo || !datos.anio || isNaN(datos.precio) || isNaN(datos.km)) {
@@ -416,20 +455,44 @@
     lector.onload = function (e) {
       var img = new Image();
       img.onload = function () {
-        var maxAncho = 1000;
+        var maxAncho = 900;
         var escala = Math.min(1, maxAncho / img.width);
         var canvas = document.createElement("canvas");
         canvas.width = Math.round(img.width * escala);
         canvas.height = Math.round(img.height * escala);
         var ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        callback(canvas.toDataURL("image/jpeg", 0.82));
+        callback(canvas.toDataURL("image/jpeg", 0.75));
       };
       img.onerror = function () { callback(null); };
       img.src = e.target.result;
     };
     lector.onerror = function () { callback(null); };
     lector.readAsDataURL(archivo);
+  }
+
+  function agregarImagen(src) {
+    if (!src) return;
+    if (imagenesCargadas.length >= 10) return;
+    if (imagenesCargadas.indexOf(src) !== -1) return;
+    imagenesCargadas.push(src);
+    renderGaleriaForm();
+  }
+
+  function renderGaleriaForm() {
+    var cont = document.getElementById("galeria-form");
+    if (!cont) return;
+    cont.innerHTML = imagenesCargadas.map(function (src, idx) {
+      return '<div class="galeria-item"><img src="' + escapar(src) + '" alt="">' +
+        '<button type="button" class="galeria-quitar" data-quitar="' + idx + '" aria-label="Quitar">&times;</button></div>';
+    }).join("");
+    var botones = cont.querySelectorAll("[data-quitar]");
+    for (var i = 0; i < botones.length; i++) {
+      botones[i].addEventListener("click", function () {
+        imagenesCargadas.splice(Number(this.getAttribute("data-quitar")), 1);
+        renderGaleriaForm();
+      });
+    }
   }
 
   function iniciarSesion(evento) {
@@ -572,8 +635,11 @@
     config = leer(CLAVE_CONFIG, null);
     if (!config) {
       config = Object.assign({}, CONFIG_INICIAL);
-      guardarConfig();
     }
+    if (!config.telefono || config.telefono === "+56 9 1234 5678") {
+      config.telefono = CONFIG_INICIAL.telefono;
+    }
+    guardar(CLAVE_CONFIG, config);
 
     sesion = leer(CLAVE_SESION, null);
 
@@ -600,22 +666,46 @@
     document.getElementById("formulario-contacto").addEventListener("submit", enviarContacto);
 
     document.getElementById("v-imagen").addEventListener("change", function () {
-      var archivo = this.files && this.files[0];
-      if (!archivo) return;
+      var archivos = Array.prototype.slice.call(this.files || []);
+      this.value = "";
+      if (!archivos.length) return;
       var aviso = document.getElementById("mensaje-vehiculo");
+      var disponibles = 10 - imagenesCargadas.length;
+      if (disponibles <= 0) {
+        aviso.className = "mensaje-formulario error";
+        aviso.textContent = "Máximo 10 imágenes por vehículo.";
+        return;
+      }
+      var aProcesar = archivos.slice(0, disponibles);
+      var pendientes = aProcesar.length;
+      var fallidas = 0;
       aviso.className = "mensaje-formulario";
-      aviso.textContent = "Procesando imagen...";
-      redimensionarImagen(archivo, function (dataUrl) {
-        if (dataUrl) {
-          imagenCargada = dataUrl;
-          document.getElementById("v-imagen-url").value = "";
-          aviso.className = "mensaje-formulario exito";
-          aviso.textContent = "Imagen cargada.";
-        } else {
-          aviso.className = "mensaje-formulario error";
-          aviso.textContent = "No se pudo procesar la imagen.";
-        }
+      aviso.textContent = "Procesando " + pendientes + " imagen(es)...";
+      aProcesar.forEach(function (archivo) {
+        redimensionarImagen(archivo, function (dataUrl) {
+          if (dataUrl) imagenesCargadas.push(dataUrl);
+          else fallidas++;
+          pendientes--;
+          if (pendientes === 0) {
+            renderGaleriaForm();
+            if (fallidas) {
+              aviso.className = "mensaje-formulario error";
+              aviso.textContent = "Algunas imágenes no se pudieron procesar.";
+            } else {
+              aviso.className = "mensaje-formulario exito";
+              aviso.textContent = "Imágenes cargadas (" + imagenesCargadas.length + "/10).";
+            }
+          }
+        });
       });
+    });
+
+    document.getElementById("v-imagen-url").addEventListener("keydown", function (evento) {
+      if (evento.key === "Enter") {
+        evento.preventDefault();
+        agregarImagen(this.value.trim());
+        this.value = "";
+      }
     });
 
     document.getElementById("btn-agregar-vehiculo").addEventListener("click", function () {
