@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Imagen no disponible">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b1f27"/>
+      <stop offset="1" stop-color="#0d0f13"/>
+    </linearGradient>
+    <linearGradient id="auto" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a414f"/>
+      <stop offset="1" stop-color="#232830"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#fondo)"/>
+  <g opacity="0.5">
+    <line x1="0" y1="150" x2="800" y2="150" stroke="#ffffff" stroke-opacity="0.04" stroke-width="2"/>
+    <line x1="0" y1="300" x2="800" y2="300" stroke="#ffffff" stroke-opacity="0.04" stroke-width="2"/>
+    <line x1="0" y1="450" x2="800" y2="450" stroke="#ffffff" stroke-opacity="0.04" stroke-width="2"/>
+  </g>
+  <g transform="translate(400 330)">
+    <path d="M-220 20 q0 -70 40 -70 l60 -8 q30 -60 90 -60 l120 0 q60 0 90 60 l60 8 q40 0 40 70 l0 30 q0 16 -16 16 l-488 0 q-16 0 -16 -16 z" fill="url(#auto)" stroke="#4a525f" stroke-width="3"/>
+    <path d="M-90 -55 q22 -38 62 -38 l100 0 q40 0 62 38 z" fill="#5a6474" opacity="0.85"/>
+    <circle cx="-140" cy="56" r="46" fill="#12151a" stroke="#4a525f" stroke-width="6"/>
+    <circle cx="-140" cy="56" r="18" fill="#2c333d"/>
+    <circle cx="150" cy="56" r="46" fill="#12151a" stroke="#4a525f" stroke-width="6"/>
+    <circle cx="150" cy="56" r="18" fill="#2c333d"/>
+  </g>
+  <text x="400" y="520" text-anchor="middle" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="6" fill="#e11d2a">KCR MOTORS</text>
+  <text x="400" y="556" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" letter-spacing="3" fill="#8b93a3">IMAGEN NO DISPONIBLE</text>
+</svg>

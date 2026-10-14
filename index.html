@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="KCR Motors: compra y venta de autos usados y seminuevos en Chile. Revisa nuestro stock, opciones de financiamiento y contáctanos.">
+  <title>KCR Motors | Autos usados y seminuevos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="encabezado">
+    <nav class="navegacion">
+      <a href="#inicio" class="logo"><img src="img/logo.jfif" alt="KCR Motors"></a>
+      <ul class="menu">
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#vehiculos">Vehículos</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#financiamiento">Financiamiento</a></li>
+        <li><a href="#redes">Redes</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+      <div class="zona-sesion">
+        <button type="button" class="boton boton-login" id="btn-abrir-login">Iniciar sesión</button>
+        <div class="usuario-activo" id="usuario-activo" hidden>
+          <span class="usuario-nombre" id="usuario-nombre"></span>
+          <span class="usuario-rol" id="usuario-rol"></span>
+          <button type="button" class="boton boton-panel" id="btn-abrir-panel">Panel</button>
+          <button type="button" class="boton boton-salir" id="btn-cerrar-sesion">Salir</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+
+    <section id="inicio" class="hero">
+      <div class="hero-fondo"></div>
+      <div class="hero-contenido">
+        <p class="hero-etiqueta" id="hero-etiqueta">Automotora en Chile</p>
+        <h1 id="hero-titulo">KCR Motors</h1>
+        <p class="hero-texto" id="hero-texto">Autos usados y seminuevos seleccionados, con revisión técnica y financiamiento a tu medida. Encuentra tu próximo vehículo con la confianza que buscas.</p>
+        <div class="buscador">
+          <input type="text" id="buscador-hero" placeholder="Busca por marca o modelo (ej: Toyota, SUV, camioneta)">
+          <button type="button" class="boton boton-claro" id="btn-buscar-hero">Buscar</button>
+        </div>
+        <div class="hero-botones">
+          <a class="boton boton-claro" href="#vehiculos">Ver stock</a>
+          <a class="boton boton-vacio" href="#contacto">Contáctanos</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="vehiculos" class="seccion">
+      <div class="contenedor">
+        <h2 class="titulo-seccion">Vehículos en venta</h2>
+        <p class="texto-seccion">Explora nuestro stock de autos usados y seminuevos. Compara precios, kilometraje y equipamiento y coordina una visita o test drive.</p>
+
+        <div class="barra-filtros">
+          <input type="text" id="filtro-texto" placeholder="Buscar marca o modelo...">
+          <select id="filtro-marca">
+            <option value="">Todas las marcas</option>
+          </select>
+          <select id="filtro-orden">
+            <option value="reciente">Más recientes</option>
+            <option value="precio-asc">Menor precio</option>
+            <option value="precio-desc">Mayor precio</option>
+            <option value="anio-desc">Año más nuevo</option>
+          </select>
+          <button type="button" class="boton boton-claro" id="btn-agregar-vehiculo" hidden>+ Publicar vehículo</button>
+        </div>
+
+        <div class="grid-vehiculos" id="grid-vehiculos"></div>
+        <p class="sin-resultados" id="sin-resultados" hidden>No se encontraron vehículos con esos filtros.</p>
+      </div>
+    </section>
+
+    <section id="nosotros" class="seccion seccion-oscura">
+      <div class="contenedor">
+        <h2 class="titulo-seccion">Sobre KCR Motors</h2>
+        <div class="texto-historia" id="texto-nosotros">
+          <p>En KCR Motors nos dedicamos a la compra y venta de vehículos usados y seminuevos en Chile. Nuestro compromiso es ofrecer autos en buen estado, con historial claro y precios justos, para que comprar un auto sea una experiencia simple y segura.</p>
+          <p>Cada vehículo de nuestro stock pasa por una revisión previa antes de publicarse. Además, te acompañamos en todo el proceso: asesoría, financiamiento y transferencia, para que solo te preocupes de elegir tu próximo auto.</p>
+        </div>
+        <div class="grid-stats">
+          <div class="stat">
+            <span class="stat-numero" id="stat-stock">0</span>
+            <span class="stat-texto">Vehículos en stock</span>
+          </div>
+          <div class="stat">
+            <span class="stat-numero">+300</span>
+            <span class="stat-texto">Clientes felices</span>
+          </div>
+          <div class="stat">
+            <span class="stat-numero">12</span>
+            <span class="stat-texto">Años de experiencia</span>
+          </div>
+          <div class="stat">
+            <span class="stat-numero">100%</span>
+            <span class="stat-texto">Autos revisados</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="financiamiento" class="seccion">
+      <div class="contenedor">
+        <h2 class="titulo-seccion">Financiamiento</h2>
+        <p class="texto-seccion">Te ayudamos a financiar tu auto con alternativas simples y transparentes. Consulta por las opciones disponibles según tu vehículo y tu situación.</p>
+        <div class="grid-tarjetas">
+          <div class="tarjeta-info">
+            <h3>Pie flexible</h3>
+            <p>Define el pie inicial que más te acomode y paga el saldo en cuotas cómodas.</p>
+          </div>
+          <div class="tarjeta-info">
+            <h3>Crédito automotriz</h3>
+            <p>Trabajamos con alternativas de crédito de distintas instituciones para que elijas la mejor.</p>
+          </div>
+          <div class="tarjeta-info">
+            <h3>Parte de pago</h3>
+            <p>Entrega tu auto actual como parte de pago y completa la diferencia con financiamiento.</p>
+          </div>
+          <div class="tarjeta-info">
+            <h3>Asesoría completa</h3>
+            <p>Revisamos tu caso, te explicamos cada paso y gestionamos la documentación contigo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="redes" class="seccion seccion-oscura">
+      <div class="contenedor">
+        <h2 class="titulo-seccion">Síguenos en redes</h2>
+        <p class="texto-redes">Conoce los vehículos recién llegados y novedades siguiéndonos en nuestras redes sociales.</p>
+        <div class="iconos-redes iconos-redes-grandes">
+          <a href="https://instagram.com/kcr.motors6?exln=MWR0dTN3eG4yY2p6Zw%3D%3D" target="_blank" rel="noopener" aria-label="Instagram de KCR Motors" class="red-instagram">
+            <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            <span>Instagram</span>
+          </a>
+          <a href="https://www.tiktok.com/@kcr.motors?_r=1&amp;_t=ZS-9AX91o1YQwK" target="_blank" rel="noopener" aria-label="TikTok de KCR Motors" class="red-tiktok">
+            <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+            <span>TikTok</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto" class="seccion">
+      <div class="contenedor">
+        <h2 class="titulo-seccion">Contacto</h2>
+        <p class="texto-contacto" id="texto-contacto">¿Quieres más información sobre un vehículo, financiamiento o agendar una visita? Envíanos un mensaje.</p>
+        <form class="formulario" id="formulario-contacto" novalidate>
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Tu correo" required>
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" rows="5" placeholder="Escribe tu mensaje" required></textarea>
+          <button type="submit" class="boton boton-claro">Enviar mensaje</button>
+          <p class="mensaje-formulario" id="mensaje-formulario"></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="pie">
+    <div class="pie-social iconos-redes">
+      <a href="https://instagram.com/kcr.motors6?exln=MWR0dTN3eG4yY2p6Zw%3D%3D" target="_blank" rel="noopener" aria-label="Instagram de KCR Motors">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </a>
+      <a href="https://www.tiktok.com/@kcr.motors?_r=1&amp;_t=ZS-9AX91o1YQwK" target="_blank" rel="noopener" aria-label="TikTok de KCR Motors">
+        <svg viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+      </a>
+    </div>
+    <p>© <span id="anio"></span> KCR Motors. Todos los derechos reservados.</p>
+    <p class="pie-contacto" id="pie-contacto"></p>
+  </footer>
+
+  <div class="modal" id="modal-login" hidden>
+    <div class="modal-caja modal-caja-angosta">
+      <button type="button" class="modal-cerrar" data-cerrar="modal-login" aria-label="Cerrar">&times;</button>
+      <h2 class="modal-titulo">Iniciar sesión</h2>
+      <p class="modal-texto">Accede para publicar o administrar vehículos.</p>
+      <form class="formulario" id="formulario-login">
+        <label for="login-usuario">Usuario</label>
+        <input type="text" id="login-usuario" autocomplete="username" placeholder="Tu usuario" required>
+        <label for="login-clave">Contraseña</label>
+        <input type="password" id="login-clave" autocomplete="current-password" placeholder="Tu contraseña" required>
+        <button type="submit" class="boton boton-claro">Ingresar</button>
+        <p class="mensaje-formulario" id="mensaje-login"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="modal-vehiculo" hidden>
+    <div class="modal-caja modal-caja-vehiculo">
+      <button type="button" class="modal-cerrar" data-cerrar="modal-vehiculo" aria-label="Cerrar">&times;</button>
+      <div class="detalle-vehiculo" id="detalle-vehiculo"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-admin" hidden>
+    <div class="panel-cabecera">
+      <div>
+        <h2>Panel de administración</h2>
+        <p class="panel-bienvenida" id="panel-bienvenida"></p>
+      </div>
+      <button type="button" class="boton boton-salir" id="btn-cerrar-panel">Cerrar panel</button>
+    </div>
+
+    <div class="panel-cuerpo">
+      <div class="panel-tarjeta">
+        <h3 id="titulo-form-vehiculo">Publicar vehículo</h3>
+        <form class="formulario formulario-panel" id="formulario-vehiculo">
+          <input type="hidden" id="vehiculo-id">
+          <div class="fila-form">
+            <div class="campo">
+              <label for="v-marca">Marca</label>
+              <input type="text" id="v-marca" placeholder="Ej: Toyota" required>
+            </div>
+            <div class="campo">
+              <label for="v-modelo">Modelo</label>
+              <input type="text" id="v-modelo" placeholder="Ej: Corolla" required>
+            </div>
+          </div>
+          <div class="fila-form">
+            <div class="campo">
+              <label for="v-anio">Año</label>
+              <input type="number" id="v-anio" min="1950" max="2100" placeholder="2020" required>
+            </div>
+            <div class="campo">
+              <label for="v-precio">Precio (CLP)</label>
+              <input type="number" id="v-precio" min="0" step="1000" placeholder="9990000" required>
+            </div>
+          </div>
+          <div class="fila-form">
+            <div class="campo">
+              <label for="v-km">Kilometraje</label>
+              <input type="number" id="v-km" min="0" step="1000" placeholder="50000" required>
+            </div>
+            <div class="campo">
+              <label for="v-combustible">Combustible</label>
+              <select id="v-combustible">
+                <option value="Bencina">Bencina</option>
+                <option value="Diesel">Diésel</option>
+                <option value="Híbrido">Híbrido</option>
+                <option value="Eléctrico">Eléctrico</option>
+                <option value="GLP">GLP</option>
+              </select>
+            </div>
+          </div>
+          <div class="fila-form">
+            <div class="campo">
+              <label for="v-transmision">Transmisión</label>
+              <select id="v-transmision">
+                <option value="Manual">Manual</option>
+                <option value="Automática">Automática</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="v-color">Color</label>
+              <input type="text" id="v-color" placeholder="Ej: Blanco">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="v-tipo">Tipo de vehículo</label>
+            <select id="v-tipo">
+              <option value="Sedán">Sedán</option>
+              <option value="Hatchback">Hatchback</option>
+              <option value="SUV">SUV</option>
+              <option value="Camioneta">Camioneta</option>
+              <option value="Station Wagon">Station Wagon</option>
+              <option value="Furgón">Furgón</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label for="v-imagen">Imagen del vehículo</label>
+            <input type="file" id="v-imagen" accept="image/*">
+            <input type="url" id="v-imagen-url" placeholder="o pega una URL de imagen (https://...)">
+          </div>
+          <div class="campo">
+            <label for="v-descripcion">Descripción</label>
+            <textarea id="v-descripcion" rows="3" placeholder="Detalles, equipamiento, mantenciones, observaciones..."></textarea>
+          </div>
+          <label class="campo-check">
+            <input type="checkbox" id="v-destacado"> Marcar como destacado
+          </label>
+          <div class="acciones-form">
+            <button type="submit" class="boton boton-claro" id="btn-guardar-vehiculo">Guardar vehículo</button>
+            <button type="button" class="boton boton-vacio-oscuro" id="btn-cancelar-edicion" hidden>Cancelar edición</button>
+          </div>
+          <p class="mensaje-formulario" id="mensaje-vehiculo"></p>
+        </form>
+      </div>
+
+      <div class="panel-tarjeta" id="panel-config" hidden>
+        <h3>Configuración de la página</h3>
+        <p class="panel-nota">Solo disponible para el perfil administrador. Los cambios se aplican al instante.</p>
+        <form class="formulario formulario-panel" id="formulario-config">
+          <div class="campo">
+            <label for="c-hero-etiqueta">Etiqueta portada</label>
+            <input type="text" id="c-hero-etiqueta">
+          </div>
+          <div class="campo">
+            <label for="c-hero-titulo">Título principal</label>
+            <input type="text" id="c-hero-titulo">
+          </div>
+          <div class="campo">
+            <label for="c-hero-texto">Texto de portada</label>
+            <textarea id="c-hero-texto" rows="3"></textarea>
+          </div>
+          <div class="campo">
+            <label for="c-nosotros">Texto "Nosotros"</label>
+            <textarea id="c-nosotros" rows="3"></textarea>
+          </div>
+          <div class="campo">
+            <label for="c-contacto">Texto de contacto</label>
+            <textarea id="c-contacto" rows="2"></textarea>
+          </div>
+          <div class="fila-form">
+            <div class="campo">
+              <label for="c-telefono">Teléfono / WhatsApp</label>
+              <input type="text" id="c-telefono" placeholder="+56 9 1234 5678">
+            </div>
+            <div class="campo">
+              <label for="c-email">Email de contacto</label>
+              <input type="email" id="c-email" placeholder="contacto@kcrmotors.cl">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="c-direccion">Dirección</label>
+            <input type="text" id="c-direccion" placeholder="Dirección de la automotora">
+          </div>
+          <div class="acciones-form">
+            <button type="submit" class="boton boton-claro">Guardar configuración</button>
+          </div>
+          <p class="mensaje-formulario" id="mensaje-config"></p>
+        </form>
+      </div>
+
+      <div class="panel-tarjeta panel-tarjeta-ancha">
+        <h3>Vehículos publicados <span class="contador-panel" id="contador-panel"></span></h3>
+        <div class="tabla-vehiculos" id="tabla-vehiculos"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
