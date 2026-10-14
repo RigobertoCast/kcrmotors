@@ -65,7 +65,7 @@ img {
 }
 
 .logo img {
-  height: 46px;
+  height: 62px;
   width: auto;
   display: block;
 }
@@ -642,11 +642,6 @@ img {
 .pie-social a:hover {
   background-color: var(--rojo);
   color: var(--blanco);
-}
-
-.pie-contacto {
-  margin-top: 8px;
-  color: var(--plata);
 }
 
 /* Modales */

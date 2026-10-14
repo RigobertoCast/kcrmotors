@@ -11,6 +11,7 @@
   ];
 
   var CORREO_FORMULARIO = "r.nexus.19@gmail.com";
+  var CORREO_COPIA = "kcrmotors7@gmail.com";
 
   var IMAGEN_PLACEHOLDER = "img/auto-placeholder.svg";
 
@@ -379,12 +380,6 @@
       return "<p>" + escapar(p) + "</p>";
     }).join("");
 
-    var lineas = [];
-    if (config.telefono) lineas.push("Teléfono / WhatsApp: " + escapar(config.telefono));
-    if (config.email) lineas.push("Email: " + escapar(config.email));
-    if (config.direccion) lineas.push("Dirección: " + escapar(config.direccion));
-    document.getElementById("pie-contacto").innerHTML = lineas.join(" · ");
-
     document.title = config.heroTitulo + " | Autos usados y seminuevos";
   }
 
@@ -542,7 +537,8 @@
         nombre: nombre,
         email: email,
         mensaje: texto,
-        _subject: "Contacto web KCR Motors - " + nombre
+        _subject: "Contacto web KCR Motors - " + nombre,
+        _cc: CORREO_COPIA
       })
     })
       .then(function (respuesta) {
@@ -557,7 +553,7 @@
       .catch(function () {
         var asunto = encodeURIComponent("Contacto web KCR Motors - " + nombre);
         var cuerpo = encodeURIComponent(texto + "\n\nNombre: " + nombre + "\nCorreo: " + email);
-        window.location.href = "mailto:" + CORREO_FORMULARIO + "?subject=" + asunto + "&body=" + cuerpo;
+        window.location.href = "mailto:" + CORREO_FORMULARIO + "," + CORREO_COPIA + "?subject=" + asunto + "&body=" + cuerpo;
         mensaje.className = "mensaje-formulario exito";
         mensaje.textContent = "¡Gracias " + nombre + "! Abrimos tu correo para enviar el mensaje.";
       })
