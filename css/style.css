@@ -911,6 +911,12 @@ img {
   margin-bottom: 18px;
 }
 
+.panel-catalogo {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e5eb;
+}
+
 .formulario-panel {
   max-width: none;
 }

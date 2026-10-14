@@ -1,55 +1,49 @@
 (function () {
   "use strict";
 
-  var CLAVE_VEHICULOS = "kcr_vehiculos_v1";
-  var CLAVE_CONFIG = "kcr_config_v1";
-  var CLAVE_SESION = "kcr_sesion_v1";
+  var FIREBASE_CONFIG = window.FIREBASE_CONFIG || {};
+  var CONFIGURADO = !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.projectId);
 
-  var USUARIOS = [
-    { usuario: "17609994-1", clave: "kcr_2026", rol: "usuario", nombre: "Dueño KCR Motors" },
-    { usuario: "18363195-0", clave: "C183r#1c", rol: "administrador", nombre: "Administrador KCR Motors" }
-  ];
-
-  var CORREO_FORMULARIO = "r.nexus.19@gmail.com";
-  var CORREO_COPIA = "kcrmotors7@gmail.com";
+  var DOMINIO_LOGIN = "@kcrmotors.cl";
+  var ADMIN_EMAILS = ["18363195-0@kcrmotors.cl"];
 
   var IMAGEN_PLACEHOLDER = "img/auto-placeholder.svg";
 
   var VEHICULOS_INICIALES = [
     {
-      id: "v1", marca: "Toyota", modelo: "Corolla XEI 1.8", anio: 2021, precio: 13990000, km: 42000,
+      marca: "Toyota", modelo: "Corolla XEI 1.8", anio: 2021, precio: 13990000, km: 42000,
       combustible: "Bencina", transmision: "Automática", color: "Blanco", tipo: "Sedán",
-      destacado: true, imagen: IMAGEN_PLACEHOLDER,
+      destacado: true,
       descripcion: "Único dueño, mantenciones al día en la marca. Aire acondicionado, pantalla táctil, cámara de retroceso y control crucero."
     },
     {
-      id: "v2", marca: "Chevrolet", modelo: "Silverado 2.8 4x4", anio: 2020, precio: 21990000, km: 68000,
+      marca: "Chevrolet", modelo: "Silverado 2.8 4x4", anio: 2020, precio: 21990000, km: 68000,
       combustible: "Diesel", transmision: "Automática", color: "Gris", tipo: "Camioneta",
-      destacado: true, imagen: IMAGEN_PLACEHOLDER,
+      destacado: true,
       descripcion: "Camioneta 4x4 diésel, mantenimiento completo, neumáticos nuevos. Ideal para trabajo y aventura."
     },
     {
-      id: "v3", marca: "Hyundai", modelo: "Tucson 2.0", anio: 2022, precio: 17490000, km: 31000,
+      marca: "Hyundai", modelo: "Tucson 2.0", anio: 2022, precio: 17490000, km: 31000,
       combustible: "Bencina", transmision: "Automática", color: "Azul", tipo: "SUV",
-      destacado: false, imagen: IMAGEN_PLACEHOLDER,
+      destacado: false,
       descripcion: "SUV familiar full equipo, sensores de retroceso, climatizador bi-zona y mantenciones en concesionario."
     },
     {
-      id: "v4", marca: "Kia", modelo: "Rio 1.4", anio: 2019, precio: 9290000, km: 54000,
+      marca: "Kia", modelo: "Rio 1.4", anio: 2019, precio: 9290000, km: 54000,
       combustible: "Bencina", transmision: "Manual", color: "Rojo", tipo: "Hatchback",
-      destacado: false, imagen: IMAGEN_PLACEHOLDER,
+      destacado: false,
       descripcion: "Auto económico y rendidor, perfecto para la ciudad. Papeles al día y transferencia inmediata."
     },
     {
-      id: "v5", marca: "Mazda", modelo: "CX-5 2.0", anio: 2021, precio: 18490000, km: 47000,
+      marca: "Mazda", modelo: "CX-5 2.0", anio: 2021, precio: 18490000, km: 47000,
       combustible: "Bencina", transmision: "Automática", color: "Negro", tipo: "SUV",
-      destacado: true, imagen: IMAGEN_PLACEHOLDER,
+      destacado: true,
       descripcion: "SUV con excelente rendimiento, tapiz de cuero, sunroof y sistema de sonido premium."
     },
     {
-      id: "v6", marca: "Nissan", modelo: "Versa 1.6", anio: 2020, precio: 10490000, km: 61000,
+      marca: "Nissan", modelo: "Versa 1.6", anio: 2020, precio: 10490000, km: 61000,
       combustible: "Bencina", transmision: "Manual", color: "Plata", tipo: "Sedán",
-      destacado: false, imagen: IMAGEN_PLACEHOLDER,
+      destacado: false,
       descripcion: "Sedán confiable y económico. Revisión técnica vigente, único dueño."
     }
   ];
@@ -65,28 +59,15 @@
     direccion: "Santiago, Chile"
   };
 
+  var db = null;
+  var auth = null;
+  var storage = null;
+
   var vehiculos = [];
   var config = {};
   var sesion = null;
   var imagenesCargadas = [];
   var vehiculoEnEdicion = null;
-
-  function leer(clave, respaldo) {
-    try {
-      var dato = localStorage.getItem(clave);
-      return dato ? JSON.parse(dato) : respaldo;
-    } catch (e) {
-      return respaldo;
-    }
-  }
-
-  function guardar(clave, valor) {
-    try {
-      localStorage.setItem(clave, JSON.stringify(valor));
-    } catch (e) {
-      alert("No se pudo guardar: el almacenamiento está lleno. Intenta con imágenes más livianas.");
-    }
-  }
 
   function escapar(texto) {
     var div = document.createElement("div");
@@ -124,7 +105,7 @@
       if (orden === "precio-asc") return a.precio - b.precio;
       if (orden === "precio-desc") return b.precio - a.precio;
       if (orden === "anio-desc") return b.anio - a.anio;
-      return 0;
+      return (b.creado || 0) - (a.creado || 0);
     });
 
     return lista;
@@ -255,6 +236,7 @@
   }
 
   function renderPanel() {
+    if (!sesion) return;
     document.getElementById("panel-bienvenida").innerHTML =
       "Sesión activa: <strong>" + escapar(sesion.nombre) + "</strong> (" + escapar(sesion.rol) + ")";
 
@@ -338,14 +320,17 @@
   function guardarVehiculo(evento) {
     evento.preventDefault();
     var mensaje = document.getElementById("mensaje-vehiculo");
+    if (!db) {
+      mensaje.className = "mensaje-formulario error";
+      mensaje.textContent = "Falta configurar Firebase (js/firebase-config.js).";
+      return;
+    }
+
     var urlImagen = document.getElementById("v-imagen-url").value.trim();
     if (urlImagen) {
       agregarImagen(urlImagen);
       document.getElementById("v-imagen-url").value = "";
     }
-
-    var imagenes = imagenesCargadas.slice(0, 10);
-    if (!imagenes.length) imagenes = [IMAGEN_PLACEHOLDER];
 
     var datos = {
       marca: document.getElementById("v-marca").value.trim(),
@@ -358,9 +343,7 @@
       color: document.getElementById("v-color").value.trim(),
       tipo: document.getElementById("v-tipo").value,
       descripcion: document.getElementById("v-descripcion").value.trim(),
-      destacado: document.getElementById("v-destacado").checked,
-      imagenes: imagenes,
-      imagen: imagenes[0]
+      destacado: document.getElementById("v-destacado").checked
     };
 
     if (!datos.marca || !datos.modelo || !datos.anio || isNaN(datos.precio) || isNaN(datos.km)) {
@@ -369,43 +352,84 @@
       return;
     }
 
-    if (vehiculoEnEdicion) {
-      vehiculos = vehiculos.map(function (v) {
-        return v.id === vehiculoEnEdicion ? Object.assign({}, v, datos) : v;
-      });
-      mensaje.className = "mensaje-formulario exito";
-      mensaje.textContent = "Vehículo actualizado.";
-    } else {
-      datos.id = "v" + Date.now();
-      vehiculos.unshift(datos);
-      mensaje.className = "mensaje-formulario exito";
-      mensaje.textContent = "Vehículo publicado.";
-    }
+    var boton = document.getElementById("btn-guardar-vehiculo");
+    var fueEdicion = !!vehiculoEnEdicion;
+    boton.disabled = true;
+    mensaje.className = "mensaje-formulario";
+    mensaje.textContent = "Guardando...";
 
-    guardarVehiculos();
-    renderFiltroMarcas();
-    renderVehiculos();
-    renderPanel();
-    limpiarFormularioVehiculo();
+    subirImagenes(imagenesCargadas.slice(0, 10)).then(function (urls) {
+      var ims = urls.length ? urls : [IMAGEN_PLACEHOLDER];
+      datos.imagenes = ims;
+      datos.imagen = ims[0];
+      if (vehiculoEnEdicion) {
+        return db.collection("vehiculos").doc(vehiculoEnEdicion).set(datos, { merge: true });
+      }
+      datos.creado = Date.now();
+      return db.collection("vehiculos").add(datos);
+    }).then(function () {
+      return cargarVehiculos();
+    }).then(function () {
+      renderFiltroMarcas();
+      renderVehiculos();
+      renderPanel();
+      limpiarFormularioVehiculo();
+      mensaje.className = "mensaje-formulario exito";
+      mensaje.textContent = fueEdicion ? "Vehículo actualizado." : "Vehículo publicado.";
+    }).catch(function (e) {
+      mensaje.className = "mensaje-formulario error";
+      mensaje.textContent = mensajeError(e);
+    }).finally(function () {
+      boton.disabled = false;
+    });
   }
 
   function eliminarVehiculo(id) {
     var v = vehiculos.filter(function (x) { return x.id === id; })[0];
-    if (!v) return;
+    if (!v || !db) return;
     if (!confirm("¿Eliminar la publicación de " + v.marca + " " + v.modelo + "?")) return;
-    vehiculos = vehiculos.filter(function (x) { return x.id !== id; });
-    guardarVehiculos();
-    renderFiltroMarcas();
-    renderVehiculos();
-    renderPanel();
+    db.collection("vehiculos").doc(id).delete().then(function () {
+      return cargarVehiculos();
+    }).then(function () {
+      renderFiltroMarcas();
+      renderVehiculos();
+      renderPanel();
+    }).catch(function (e) {
+      alert(mensajeError(e));
+    });
   }
 
-  function guardarVehiculos() {
-    guardar(CLAVE_VEHICULOS, vehiculos);
+  function subirImagenes(lista) {
+    var tareas = lista.map(function (src, i) {
+      if (/^https?:\/\//i.test(src) || src.indexOf("img/") === 0) return Promise.resolve(src);
+      var nombre = "vehiculos/" + Date.now() + "_" + i + "_" + Math.random().toString(36).slice(2, 8) + ".jpg";
+      var ref = storage.ref().child(nombre);
+      return ref.putString(src, "data_url").then(function (snap) {
+        return snap.ref.getDownloadURL();
+      });
+    });
+    return Promise.all(tareas);
   }
 
-  function guardarConfig() {
-    guardar(CLAVE_CONFIG, config);
+  function cargarVehiculos() {
+    return db.collection("vehiculos").get().then(function (snap) {
+      vehiculos = [];
+      snap.forEach(function (doc) {
+        var d = doc.data();
+        d.id = doc.id;
+        vehiculos.push(d);
+      });
+      vehiculos.sort(function (a, b) { return (b.creado || 0) - (a.creado || 0); });
+    });
+  }
+
+  function cargarConfig() {
+    return db.collection("config").doc("sitio").get().then(function (doc) {
+      config = Object.assign({}, CONFIG_INICIAL, doc.exists ? doc.data() : {});
+      if (!config.telefono || config.telefono === "+56 9 1234 5678" || config.telefono === "+56983555364") {
+        config.telefono = CONFIG_INICIAL.telefono;
+      }
+    });
   }
 
   function aplicarConfig() {
@@ -435,6 +459,8 @@
 
   function guardarConfigFormulario(evento) {
     evento.preventDefault();
+    var mensaje = document.getElementById("mensaje-config");
+    if (!db) return;
     config.heroEtiqueta = document.getElementById("c-hero-etiqueta").value.trim();
     config.heroTitulo = document.getElementById("c-hero-titulo").value.trim();
     config.heroTexto = document.getElementById("c-hero-texto").value.trim();
@@ -443,11 +469,38 @@
     config.telefono = document.getElementById("c-telefono").value.trim();
     config.email = document.getElementById("c-email").value.trim();
     config.direccion = document.getElementById("c-direccion").value.trim();
-    guardarConfig();
-    aplicarConfig();
-    var mensaje = document.getElementById("mensaje-config");
-    mensaje.className = "mensaje-formulario exito";
-    mensaje.textContent = "Configuración guardada y aplicada.";
+    db.collection("config").doc("sitio").set(config).then(function () {
+      aplicarConfig();
+      mensaje.className = "mensaje-formulario exito";
+      mensaje.textContent = "Configuración guardada y aplicada.";
+    }).catch(function (e) {
+      mensaje.className = "mensaje-formulario error";
+      mensaje.textContent = mensajeError(e);
+    });
+  }
+
+  function cargarCatalogoEjemplo() {
+    var mensaje = document.getElementById("mensaje-catalogo");
+    if (!db) return;
+    if (!confirm("Se agregarán 6 vehículos de ejemplo a la base de datos. ¿Continuar?")) return;
+    var lote = db.batch();
+    VEHICULOS_INICIALES.forEach(function (v, i) {
+      var ref = db.collection("vehiculos").doc();
+      var copia = Object.assign({}, v, { creado: Date.now() - i * 1000, imagenes: [IMAGEN_PLACEHOLDER], imagen: IMAGEN_PLACEHOLDER });
+      lote.set(ref, copia);
+    });
+    lote.commit().then(function () {
+      return cargarVehiculos();
+    }).then(function () {
+      renderFiltroMarcas();
+      renderVehiculos();
+      renderPanel();
+      mensaje.className = "mensaje-formulario exito";
+      mensaje.textContent = "Catálogo de ejemplo cargado.";
+    }).catch(function (e) {
+      mensaje.className = "mensaje-formulario error";
+      mensaje.textContent = mensajeError(e);
+    });
   }
 
   function redimensionarImagen(archivo, callback) {
@@ -455,14 +508,14 @@
     lector.onload = function (e) {
       var img = new Image();
       img.onload = function () {
-        var maxAncho = 900;
+        var maxAncho = 1280;
         var escala = Math.min(1, maxAncho / img.width);
         var canvas = document.createElement("canvas");
         canvas.width = Math.round(img.width * escala);
         canvas.height = Math.round(img.height * escala);
         var ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        callback(canvas.toDataURL("image/jpeg", 0.75));
+        callback(canvas.toDataURL("image/jpeg", 0.8));
       };
       img.onerror = function () { callback(null); };
       img.src = e.target.result;
@@ -495,29 +548,46 @@
     }
   }
 
+  function construirSesion(u) {
+    if (!u) return null;
+    var esAdmin = ADMIN_EMAILS.indexOf(u.email) !== -1;
+    return {
+      email: u.email,
+      rol: esAdmin ? "administrador" : "usuario",
+      nombre: esAdmin ? "Administrador KCR Motors" : "Dueño KCR Motors"
+    };
+  }
+
   function iniciarSesion(evento) {
     evento.preventDefault();
-    var usuario = document.getElementById("login-usuario").value.trim().toLowerCase();
-    var clave = document.getElementById("login-clave").value;
     var mensaje = document.getElementById("mensaje-login");
-
-    var encontrado = USUARIOS.filter(function (u) {
-      return u.usuario === usuario && u.clave === clave;
-    })[0];
-
-    if (!encontrado) {
+    if (!auth) {
       mensaje.className = "mensaje-formulario error";
-      mensaje.textContent = "Usuario o contraseña incorrectos.";
+      mensaje.textContent = "Falta configurar Firebase (js/firebase-config.js).";
       return;
     }
+    var usuario = document.getElementById("login-usuario").value.trim().toLowerCase();
+    var clave = document.getElementById("login-clave").value;
+    var email = usuario.indexOf("@") !== -1 ? usuario : usuario + DOMINIO_LOGIN;
 
-    sesion = { usuario: encontrado.usuario, nombre: encontrado.nombre, rol: encontrado.rol };
-    guardar(CLAVE_SESION, sesion);
-    actualizarSesionUI();
-    cerrarModal("modal-login");
-    document.getElementById("formulario-login").reset();
-    mensaje.textContent = "";
-    abrirPanel();
+    mensaje.className = "mensaje-formulario";
+    mensaje.textContent = "Ingresando...";
+    var boton = document.querySelector("#formulario-login button[type='submit']");
+    boton.disabled = true;
+
+    auth.signInWithEmailAndPassword(email, clave).then(function (cred) {
+      sesion = construirSesion(cred.user);
+      actualizarSesionUI();
+      cerrarModal("modal-login");
+      document.getElementById("formulario-login").reset();
+      mensaje.textContent = "";
+      abrirPanel();
+    }).catch(function (e) {
+      mensaje.className = "mensaje-formulario error";
+      mensaje.textContent = mensajeError(e);
+    }).finally(function () {
+      boton.disabled = false;
+    });
   }
 
   function actualizarSesionUI() {
@@ -539,8 +609,8 @@
   }
 
   function cerrarSesion() {
+    if (auth) auth.signOut();
     sesion = null;
-    try { localStorage.removeItem(CLAVE_SESION); } catch (e) {}
     actualizarSesionUI();
     cerrarPanel();
   }
@@ -569,6 +639,18 @@
     document.body.style.overflow = "";
   }
 
+  function mensajeError(e) {
+    var codigo = (e && e.code) || "";
+    if (codigo.indexOf("auth/") === 0) {
+      if (codigo === "auth/too-many-requests") return "Demasiados intentos. Espera un momento e intenta de nuevo.";
+      return "Usuario o contraseña incorrectos.";
+    }
+    if (codigo === "permission-denied") return "No tienes permisos para esta acción.";
+    if (codigo.indexOf("storage/") === 0) return "No se pudo subir la imagen (revisa los permisos de Storage).";
+    if (codigo === "unavailable") return "Sin conexión con la base de datos. Revisa tu internet.";
+    return "Ocurrió un error. Intenta de nuevo.";
+  }
+
   function enviarContacto(evento) {
     evento.preventDefault();
     var mensaje = document.getElementById("mensaje-formulario");
@@ -593,7 +675,7 @@
     mensaje.textContent = "Enviando mensaje...";
     boton.disabled = true;
 
-    fetch("https://formsubmit.co/ajax/" + CORREO_FORMULARIO, {
+    fetch("https://formsubmit.co/ajax/r.nexus.19@gmail.com", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
       body: JSON.stringify({
@@ -601,7 +683,7 @@
         email: email,
         mensaje: texto,
         _subject: "Contacto web KCR Motors - " + nombre,
-        _cc: CORREO_COPIA
+        _cc: "kcrmotors7@gmail.com"
       })
     })
       .then(function (respuesta) {
@@ -616,7 +698,7 @@
       .catch(function () {
         var asunto = encodeURIComponent("Contacto web KCR Motors - " + nombre);
         var cuerpo = encodeURIComponent(texto + "\n\nNombre: " + nombre + "\nCorreo: " + email);
-        window.location.href = "mailto:" + CORREO_FORMULARIO + "," + CORREO_COPIA + "?subject=" + asunto + "&body=" + cuerpo;
+        window.location.href = "mailto:r.nexus.19@gmail.com,kcrmotors7@gmail.com?subject=" + asunto + "&body=" + cuerpo;
         mensaje.className = "mensaje-formulario exito";
         mensaje.textContent = "¡Gracias " + nombre + "! Abrimos tu correo para enviar el mensaje.";
       })
@@ -626,30 +708,9 @@
   }
 
   function inicializar() {
-    vehiculos = leer(CLAVE_VEHICULOS, null);
-    if (!Array.isArray(vehiculos)) {
-      vehiculos = VEHICULOS_INICIALES.slice();
-      guardarVehiculos();
-    }
-
-    config = leer(CLAVE_CONFIG, null);
-    if (!config) {
-      config = Object.assign({}, CONFIG_INICIAL);
-    }
-    if (!config.telefono || config.telefono === "+56 9 1234 5678" || config.telefono === "+56983555364") {
-      config.telefono = CONFIG_INICIAL.telefono;
-    }
-    guardar(CLAVE_CONFIG, config);
-
-    sesion = leer(CLAVE_SESION, null);
-
     document.getElementById("anio").textContent = new Date().getFullYear();
 
-    aplicarConfig();
-    renderFiltroMarcas();
-    renderVehiculos();
-    actualizarSesionUI();
-
+    // Eventos de interfaz
     document.getElementById("btn-abrir-login").addEventListener("click", function () {
       document.getElementById("mensaje-login").textContent = "";
       abrirModal("modal-login");
@@ -664,6 +725,9 @@
     document.getElementById("formulario-vehiculo").addEventListener("submit", guardarVehiculo);
     document.getElementById("formulario-config").addEventListener("submit", guardarConfigFormulario);
     document.getElementById("formulario-contacto").addEventListener("submit", enviarContacto);
+
+    var btnCatalogo = document.getElementById("btn-catalogo-ejemplo");
+    if (btnCatalogo) btnCatalogo.addEventListener("click", cargarCatalogoEjemplo);
 
     document.getElementById("v-imagen").addEventListener("change", function () {
       var archivos = Array.prototype.slice.call(this.files || []);
@@ -752,6 +816,44 @@
           if (!modal.hidden) cerrarModal(modal.id);
         });
       }
+    });
+
+    // Firebase
+    if (!CONFIGURADO) {
+      vehiculos = VEHICULOS_INICIALES.map(function (v, i) {
+        return Object.assign({ id: "demo" + i, imagenes: [IMAGEN_PLACEHOLDER], imagen: IMAGEN_PLACEHOLDER }, v);
+      });
+      config = Object.assign({}, CONFIG_INICIAL);
+      aplicarConfig();
+      renderFiltroMarcas();
+      renderVehiculos();
+      actualizarSesionUI();
+      return;
+    }
+
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    storage = firebase.storage();
+
+    auth.onAuthStateChanged(function (u) {
+      sesion = construirSesion(u);
+      actualizarSesionUI();
+      if (sesion) renderPanel();
+    });
+
+    Promise.all([cargarVehiculos(), cargarConfig()]).then(function () {
+      aplicarConfig();
+      renderFiltroMarcas();
+      renderVehiculos();
+      actualizarSesionUI();
+      if (sesion) renderPanel();
+    }).catch(function (e) {
+      console.error(e);
+      aplicarConfig();
+      renderFiltroMarcas();
+      renderVehiculos();
+      actualizarSesionUI();
     });
   }
 
