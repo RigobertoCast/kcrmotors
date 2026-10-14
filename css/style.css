@@ -1,14 +1,17 @@
 :root {
-  --negro: #0d0f13;
-  --carbon: #15181e;
-  --carbon-claro: #1d222b;
-  --borde: #2a303c;
-  --rojo: #e11d2a;
-  --rojo-oscuro: #b3141f;
-  --plata: #c9ced8;
-  --gris: #8b93a3;
+  --negro: #050505;
+  --carbon: #111111;
+  --carbon-claro: #1a1a1a;
+  --borde: #2a2a2a;
+  --rojo: #111111;
+  --rojo-oscuro: #000000;
+  --plata: #f5f5f5;
+  --gris: #b8b8b8;
   --blanco: #ffffff;
-  --texto: #23262d;
+  --texto: #111111;
+  --amarillo: #ffc107;
+  --amarillo-oscuro: #ffb300;
+  --fondo: #fafafa;
 }
 
 * {
@@ -28,7 +31,7 @@ html {
 body {
   font-family: "Inter", Arial, sans-serif;
   color: var(--texto);
-  background-color: #f5f6f8;
+  background-color: var(--fondo);
   line-height: 1.6;
 }
 
@@ -48,8 +51,8 @@ img {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(13, 15, 19, 0.97);
-  border-bottom: 3px solid var(--rojo);
+  background-color: rgba(5, 5, 5, 0.98);
+  border-bottom: 3px solid var(--amarillo);
   z-index: 200;
 }
 
@@ -87,7 +90,7 @@ img {
 }
 
 .menu a:hover {
-  color: var(--rojo);
+  color: var(--amarillo);
 }
 
 .zona-sesion {
@@ -110,13 +113,14 @@ img {
 }
 
 .usuario-rol {
-  background-color: var(--rojo);
-  color: var(--blanco);
+  background-color: var(--amarillo);
+  color: var(--negro);
   font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 1px;
   padding: 3px 8px;
   border-radius: 20px;
+  font-weight: 700;
 }
 
 /* Botones */
@@ -138,12 +142,12 @@ img {
 }
 
 .boton-claro {
-  background-color: var(--rojo);
-  color: var(--blanco);
+  background-color: var(--amarillo);
+  color: var(--negro);
 }
 
 .boton-claro:hover {
-  background-color: var(--rojo-oscuro);
+  background-color: var(--amarillo-oscuro);
 }
 
 .boton-vacio {
@@ -160,14 +164,14 @@ img {
 
 .boton-login {
   background-color: transparent;
-  border: 1px solid var(--rojo);
+  border: 1px solid var(--amarillo);
   color: var(--blanco);
 }
 
 .boton-login:hover,
 .boton-panel {
-  background-color: var(--rojo);
-  color: var(--blanco);
+  background-color: var(--amarillo);
+  color: var(--negro);
 }
 
 .boton-panel {
@@ -185,7 +189,7 @@ img {
 }
 
 .boton-salir:hover {
-  border-color: var(--rojo);
+  border-color: var(--amarillo);
   color: var(--blanco);
 }
 
@@ -206,9 +210,9 @@ img {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 20%, rgba(225, 29, 42, 0.28), transparent 45%),
-    radial-gradient(circle at 85% 75%, rgba(120, 130, 150, 0.25), transparent 50%),
-    linear-gradient(160deg, #0d0f13 0%, #191d26 55%, #0a0b0e 100%);
+    radial-gradient(circle at 20% 20%, rgba(255, 193, 7, 0.22), transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(150, 150, 150, 0.22), transparent 50%),
+    linear-gradient(160deg, #050505 0%, #161616 55%, #000000 100%);
   z-index: -1;
 }
 
@@ -225,11 +229,11 @@ img {
 }
 
 .hero-etiqueta {
-  color: var(--rojo);
+  color: var(--amarillo);
   font-size: 1rem;
   letter-spacing: 4px;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 8px;
 }
 
@@ -266,7 +270,7 @@ img {
 }
 
 .buscador input:focus {
-  outline: 2px solid var(--rojo);
+  outline: 2px solid var(--amarillo);
 }
 
 .hero-botones {
@@ -303,7 +307,7 @@ img {
   display: block;
   width: 74px;
   height: 4px;
-  background: linear-gradient(90deg, var(--rojo), #7d1018);
+  background: linear-gradient(90deg, var(--amarillo), #ffcc33);
   margin: 14px auto 0;
 }
 
@@ -342,7 +346,7 @@ img {
 .barra-filtros input:focus,
 .barra-filtros select:focus {
   outline: none;
-  border-color: var(--rojo);
+  border-color: var(--amarillo);
 }
 
 /* Grilla de vehículos */
@@ -386,8 +390,8 @@ img {
   position: absolute;
   top: 12px;
   left: 12px;
-  background-color: var(--rojo);
-  color: var(--blanco);
+  background-color: var(--amarillo);
+  color: var(--negro);
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -408,7 +412,7 @@ img {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: var(--rojo);
+  color: var(--negro);
   font-weight: 700;
 }
 
@@ -489,7 +493,7 @@ img {
   display: block;
   font-family: "Oswald", sans-serif;
   font-size: 2.4rem;
-  color: var(--rojo);
+  color: var(--amarillo);
   line-height: 1;
   margin-bottom: 6px;
 }
@@ -511,7 +515,7 @@ img {
 .tarjeta-info {
   background-color: var(--blanco);
   border: 1px solid #e2e5eb;
-  border-top: 4px solid var(--rojo);
+  border-top: 4px solid var(--amarillo);
   border-radius: 8px;
   padding: 28px 24px;
 }
@@ -594,7 +598,7 @@ img {
 .formulario select:focus,
 .formulario textarea:focus {
   outline: none;
-  border-color: var(--rojo);
+  border-color: var(--amarillo);
 }
 
 .formulario textarea {
@@ -640,8 +644,8 @@ img {
 }
 
 .pie-social a:hover {
-  background-color: var(--rojo);
-  color: var(--blanco);
+  background-color: var(--amarillo);
+  color: var(--negro);
 }
 
 /* Modales */
@@ -689,7 +693,7 @@ img {
 }
 
 .modal-cerrar:hover {
-  color: var(--rojo);
+  color: var(--amarillo-oscuro);
 }
 
 .modal-titulo {
@@ -732,7 +736,7 @@ img {
 }
 
 .detalle-mini.activa {
-  border-color: var(--rojo);
+  border-color: var(--amarillo);
 }
 
 .detalle-mini img {
@@ -769,8 +773,9 @@ img {
   height: 22px;
   border: none;
   border-radius: 50%;
-  background-color: var(--rojo);
-  color: #fff;
+  background-color: var(--negro);
+  color: var(--amarillo);
+  font-weight: 700;
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
@@ -789,7 +794,7 @@ img {
 .detalle-precio {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--rojo);
+  color: var(--negro);
   margin-bottom: 16px;
 }
 
@@ -855,7 +860,7 @@ img {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  border-bottom: 3px solid var(--rojo);
+  border-bottom: 3px solid var(--amarillo);
   z-index: 2;
 }
 
@@ -995,14 +1000,15 @@ img {
 }
 
 .boton-eliminar {
-  background-color: #fdecee;
-  color: var(--rojo-oscuro);
-  border: 1px solid #f4c9ce;
+  background-color: #fff8e1;
+  color: #7a5c00;
+  border: 1px solid #ffe082;
 }
 
 .boton-eliminar:hover {
-  background-color: var(--rojo);
+  background-color: var(--negro);
   color: var(--blanco);
+  border-color: var(--negro);
 }
 
 .boton-editar {
