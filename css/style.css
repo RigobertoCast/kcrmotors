@@ -989,6 +989,36 @@ img {
   background-color: var(--blanco);
 }
 
+.fila-vehiculo-orden {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.boton-mover {
+  width: 36px;
+  height: 30px;
+  border: 1px solid #d5dae2;
+  border-radius: 6px;
+  background-color: #eef0f4;
+  color: var(--negro);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.boton-mover:hover:not(:disabled) {
+  background-color: var(--amarillo);
+  border-color: var(--amarillo-oscuro);
+}
+
+.boton-mover:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 .fila-vehiculo img {
   width: 100%;
   aspect-ratio: 16 / 9;

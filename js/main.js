@@ -104,7 +104,8 @@
       if (orden === "precio-asc") return a.precio - b.precio;
       if (orden === "precio-desc") return b.precio - a.precio;
       if (orden === "anio-desc") return b.anio - a.anio;
-      return (b.creado || 0) - (a.creado || 0);
+      if (orden === "reciente") return (b.creado || 0) - (a.creado || 0);
+      return (a.orden || 0) - (b.orden || 0);
     });
 
     return lista;
@@ -249,9 +250,15 @@
       return;
     }
 
-    tabla.innerHTML = vehiculos.map(function (v) {
+    tabla.innerHTML = vehiculos.map(function (v, idx) {
+      var primero = idx === 0;
+      var ultimo = idx === vehiculos.length - 1;
       return '' +
         '<div class="fila-vehiculo">' +
+          '<div class="fila-vehiculo-orden">' +
+            '<button type="button" class="boton-mover" data-subir="' + escapar(v.id) + '" title="Subir"' + (primero ? " disabled" : "") + '>&#9650;</button>' +
+            '<button type="button" class="boton-mover" data-bajar="' + escapar(v.id) + '" title="Bajar"' + (ultimo ? " disabled" : "") + '>&#9660;</button>' +
+          '</div>' +
           '<img src="' + escapar(portada(v)) + '" alt="' + escapar(v.marca + " " + v.modelo) + '">' +
           '<div class="fila-vehiculo-info">' +
             '<strong>' + escapar(v.marca + " " + v.modelo) + '</strong>' +
@@ -263,6 +270,20 @@
           '</div>' +
         '</div>';
     }).join("");
+
+    var botonesSubir = tabla.querySelectorAll("[data-subir]");
+    for (var s = 0; s < botonesSubir.length; s++) {
+      botonesSubir[s].addEventListener("click", function () {
+        moverVehiculo(this.getAttribute("data-subir"), -1);
+      });
+    }
+
+    var botonesBajar = tabla.querySelectorAll("[data-bajar]");
+    for (var b = 0; b < botonesBajar.length; b++) {
+      botonesBajar[b].addEventListener("click", function () {
+        moverVehiculo(this.getAttribute("data-bajar"), 1);
+      });
+    }
 
     var botonesEliminar = tabla.querySelectorAll("[data-eliminar]");
     for (var i = 0; i < botonesEliminar.length; i++) {
@@ -277,6 +298,38 @@
         cargarEnFormulario(this.getAttribute("data-editar"));
       });
     }
+  }
+
+  function moverVehiculo(id, direccion) {
+    var i = indexDeVehiculo(id);
+    var j = i + direccion;
+    if (i < 0 || j < 0 || j >= vehiculos.length) return;
+    var temp = vehiculos[i];
+    vehiculos[i] = vehiculos[j];
+    vehiculos[j] = temp;
+    persistirOrden().then(function () {
+      renderVehiculos();
+      renderPanel();
+    }).catch(function (e) {
+      alert(mensajeError(e));
+      cargarVehiculos().then(function () { renderVehiculos(); renderPanel(); });
+    });
+  }
+
+  function indexDeVehiculo(id) {
+    for (var i = 0; i < vehiculos.length; i++) {
+      if (vehiculos[i].id === id) return i;
+    }
+    return -1;
+  }
+
+  function persistirOrden() {
+    var lote = db.batch();
+    vehiculos.forEach(function (v, i) {
+      v.orden = i;
+      lote.update(db.collection("vehiculos").doc(v.id), { orden: i });
+    });
+    return lote.commit();
   }
 
   function cargarEnFormulario(id) {
@@ -361,6 +414,7 @@
         return db.collection("vehiculos").doc(vehiculoEnEdicion).set(datos, { merge: true });
       }
       datos.creado = Date.now();
+      datos.orden = vehiculos.length;
       return db.collection("vehiculos").add(datos);
     }).then(function () {
       return cargarVehiculos();
@@ -406,7 +460,15 @@
         d.id = doc.id;
         vehiculos.push(d);
       });
-      vehiculos.sort(function (a, b) { return (b.creado || 0) - (a.creado || 0); });
+      vehiculos.sort(function (a, b) {
+        var oa = typeof a.orden === "number" ? a.orden : null;
+        var ob = typeof b.orden === "number" ? b.orden : null;
+        if (oa !== null && ob !== null) return oa - ob;
+        if (oa !== null) return -1;
+        if (ob !== null) return 1;
+        return (b.creado || 0) - (a.creado || 0);
+      });
+      vehiculos.forEach(function (v, i) { v.orden = i; });
     });
   }
 
@@ -473,7 +535,7 @@
     var lote = db.batch();
     VEHICULOS_INICIALES.forEach(function (v, i) {
       var ref = db.collection("vehiculos").doc();
-      var copia = Object.assign({}, v, { creado: Date.now() - i * 1000, imagenes: [IMAGEN_PLACEHOLDER], imagen: IMAGEN_PLACEHOLDER });
+      var copia = Object.assign({}, v, { creado: Date.now() - i * 1000, orden: i, imagenes: [IMAGEN_PLACEHOLDER], imagen: IMAGEN_PLACEHOLDER });
       lote.set(ref, copia);
     });
     lote.commit().then(function () {
