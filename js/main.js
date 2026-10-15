@@ -61,7 +61,6 @@
 
   var db = null;
   var auth = null;
-  var storage = null;
 
   var vehiculos = [];
   var config = {};
@@ -298,7 +297,6 @@
     document.getElementById("v-descripcion").value = v.descripcion || "";
     document.getElementById("v-destacado").checked = !!v.destacado;
     imagenesCargadas = imagenesDe(v).slice(0, 10);
-    document.getElementById("v-imagen").value = "";
     document.getElementById("v-imagen-url").value = "";
     renderGaleriaForm();
     document.getElementById("btn-cancelar-edicion").hidden = false;
@@ -326,11 +324,8 @@
       return;
     }
 
-    var urlImagen = document.getElementById("v-imagen-url").value.trim();
-    if (urlImagen) {
-      agregarImagen(urlImagen);
-      document.getElementById("v-imagen-url").value = "";
-    }
+    agregarImagenesDeTexto(document.getElementById("v-imagen-url").value);
+    document.getElementById("v-imagen-url").value = "";
 
     var datos = {
       marca: document.getElementById("v-marca").value.trim(),
@@ -400,15 +395,7 @@
   }
 
   function subirImagenes(lista) {
-    var tareas = lista.map(function (src, i) {
-      if (/^https?:\/\//i.test(src) || src.indexOf("img/") === 0) return Promise.resolve(src);
-      var nombre = "vehiculos/" + Date.now() + "_" + i + "_" + Math.random().toString(36).slice(2, 8) + ".jpg";
-      var ref = storage.ref().child(nombre);
-      return ref.putString(src, "data_url").then(function (snap) {
-        return snap.ref.getDownloadURL();
-      });
-    });
-    return Promise.all(tareas);
+    return Promise.resolve(lista.slice(0, 10));
   }
 
   function cargarVehiculos() {
@@ -503,25 +490,12 @@
     });
   }
 
-  function redimensionarImagen(archivo, callback) {
-    var lector = new FileReader();
-    lector.onload = function (e) {
-      var img = new Image();
-      img.onload = function () {
-        var maxAncho = 1280;
-        var escala = Math.min(1, maxAncho / img.width);
-        var canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * escala);
-        canvas.height = Math.round(img.height * escala);
-        var ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        callback(canvas.toDataURL("image/jpeg", 0.8));
-      };
-      img.onerror = function () { callback(null); };
-      img.src = e.target.result;
-    };
-    lector.onerror = function () { callback(null); };
-    lector.readAsDataURL(archivo);
+  function agregarImagenesDeTexto(texto) {
+    if (!texto) return;
+    texto.split(/[\n,]+/).forEach(function (linea) {
+      var url = linea.trim();
+      if (url) agregarImagen(url);
+    });
   }
 
   function agregarImagen(src) {
@@ -729,45 +703,16 @@
     var btnCatalogo = document.getElementById("btn-catalogo-ejemplo");
     if (btnCatalogo) btnCatalogo.addEventListener("click", cargarCatalogoEjemplo);
 
-    document.getElementById("v-imagen").addEventListener("change", function () {
-      var archivos = Array.prototype.slice.call(this.files || []);
-      this.value = "";
-      if (!archivos.length) return;
-      var aviso = document.getElementById("mensaje-vehiculo");
-      var disponibles = 10 - imagenesCargadas.length;
-      if (disponibles <= 0) {
-        aviso.className = "mensaje-formulario error";
-        aviso.textContent = "Máximo 10 imágenes por vehículo.";
-        return;
-      }
-      var aProcesar = archivos.slice(0, disponibles);
-      var pendientes = aProcesar.length;
-      var fallidas = 0;
-      aviso.className = "mensaje-formulario";
-      aviso.textContent = "Procesando " + pendientes + " imagen(es)...";
-      aProcesar.forEach(function (archivo) {
-        redimensionarImagen(archivo, function (dataUrl) {
-          if (dataUrl) imagenesCargadas.push(dataUrl);
-          else fallidas++;
-          pendientes--;
-          if (pendientes === 0) {
-            renderGaleriaForm();
-            if (fallidas) {
-              aviso.className = "mensaje-formulario error";
-              aviso.textContent = "Algunas imágenes no se pudieron procesar.";
-            } else {
-              aviso.className = "mensaje-formulario exito";
-              aviso.textContent = "Imágenes cargadas (" + imagenesCargadas.length + "/10).";
-            }
-          }
-        });
-      });
+    document.getElementById("btn-agregar-imagenes").addEventListener("click", function () {
+      var campo = document.getElementById("v-imagen-url");
+      agregarImagenesDeTexto(campo.value);
+      campo.value = "";
     });
 
     document.getElementById("v-imagen-url").addEventListener("keydown", function (evento) {
-      if (evento.key === "Enter") {
+      if (evento.key === "Enter" && (evento.ctrlKey || evento.metaKey)) {
         evento.preventDefault();
-        agregarImagen(this.value.trim());
+        agregarImagenesDeTexto(this.value);
         this.value = "";
       }
     });
@@ -834,7 +779,6 @@
     firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
     auth = firebase.auth();
-    storage = firebase.storage();
 
     auth.onAuthStateChanged(function (u) {
       sesion = construirSesion(u);

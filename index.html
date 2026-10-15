@@ -258,9 +258,10 @@
             </select>
           </div>
           <div class="campo">
-            <label for="v-imagen">Imágenes del vehículo (máximo 10)</label>
-            <input type="file" id="v-imagen" accept="image/*" multiple>
-            <input type="url" id="v-imagen-url" placeholder="o pega una URL de imagen (https://...) y presiona Enter">
+            <label for="v-imagen-url">Enlaces de las fotos (una por línea, máximo 10)</label>
+            <textarea id="v-imagen-url" rows="3" placeholder="Pega aquí los enlaces de las imágenes (https://...), uno por línea.&#10;Ejemplo: https://i.ibb.co/abcd1234/foto1.jpg"></textarea>
+            <button type="button" id="btn-agregar-imagenes" class="boton boton-claro">Agregar enlaces</button>
+            <p class="ayuda-imagen">Sube tus fotos a un servicio gratuito como <strong>imgbb.com</strong> o <strong>postimages.org</strong> y pega aquí los enlaces directos (deben terminar en .jpg, .png, etc.).</p>
             <div class="galeria-form" id="galeria-form"></div>
           </div>
           <div class="campo">
@@ -338,7 +339,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="js/main.js"></script>
 </body>

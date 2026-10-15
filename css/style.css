@@ -757,6 +757,20 @@ img {
   margin-top: 10px;
 }
 
+.ayuda-imagen {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--gris);
+}
+
+.ayuda-imagen strong {
+  color: var(--texto);
+}
+
+#btn-agregar-imagenes {
+  margin-top: 8px;
+}
+
 .galeria-item {
   position: relative;
   width: 84px;
