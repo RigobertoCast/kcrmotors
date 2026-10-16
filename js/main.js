@@ -240,7 +240,9 @@
     document.getElementById("panel-bienvenida").innerHTML =
       "Sesión activa: <strong>" + escapar(sesion.nombre) + "</strong> (" + escapar(sesion.rol) + ")";
 
-    document.getElementById("panel-config").hidden = sesion.rol !== "administrador";
+    document.getElementById("panel-config").hidden = false;
+    var catalogoAdmin = document.getElementById("panel-catalogo-admin");
+    if (catalogoAdmin) catalogoAdmin.hidden = sesion.rol !== "administrador";
 
     var tabla = document.getElementById("tabla-vehiculos");
     document.getElementById("contador-panel").textContent = "(" + vehiculos.length + ")";
@@ -654,7 +656,7 @@
   function abrirPanel() {
     if (!sesion) return;
     renderPanel();
-    if (sesion.rol === "administrador") cargarConfigEnFormulario();
+    cargarConfigEnFormulario();
     document.getElementById("panel-admin").hidden = false;
     document.body.style.overflow = "hidden";
   }
