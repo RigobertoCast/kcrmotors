@@ -56,7 +56,9 @@
     contacto: "¿Quieres más información sobre un vehículo, financiamiento o agendar una visita? Envíanos un mensaje.",
     telefono: "+56977289537",
     email: "r.nexus.19@gmail.com",
-    direccion: "Santiago, Chile"
+    direccion: "Santiago, Chile",
+    clientesFelices: "+300",
+    aniosExperiencia: "12"
   };
 
   var db = null;
@@ -489,6 +491,9 @@
     document.getElementById("hero-texto").textContent = config.heroTexto;
     document.getElementById("texto-contacto").textContent = config.contacto;
 
+    document.getElementById("stat-clientes").textContent = config.clientesFelices || CONFIG_INICIAL.clientesFelices;
+    document.getElementById("stat-anios").textContent = config.aniosExperiencia || CONFIG_INICIAL.aniosExperiencia;
+
     var parrafos = (config.nosotros || "").split("\n").filter(function (p) { return p.trim(); });
     document.getElementById("texto-nosotros").innerHTML = parrafos.map(function (p) {
       return "<p>" + escapar(p) + "</p>";
@@ -506,6 +511,8 @@
     document.getElementById("c-telefono").value = config.telefono || "";
     document.getElementById("c-email").value = config.email || "";
     document.getElementById("c-direccion").value = config.direccion || "";
+    document.getElementById("c-clientes").value = config.clientesFelices || "";
+    document.getElementById("c-anios").value = config.aniosExperiencia || "";
   }
 
   function guardarConfigFormulario(evento) {
@@ -520,6 +527,8 @@
     config.telefono = document.getElementById("c-telefono").value.trim();
     config.email = document.getElementById("c-email").value.trim();
     config.direccion = document.getElementById("c-direccion").value.trim();
+    config.clientesFelices = document.getElementById("c-clientes").value.trim();
+    config.aniosExperiencia = document.getElementById("c-anios").value.trim();
     db.collection("config").doc("sitio").set(config).then(function () {
       aplicarConfig();
       mensaje.className = "mensaje-formulario exito";
