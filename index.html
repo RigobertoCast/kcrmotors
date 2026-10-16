@@ -103,26 +103,9 @@
 
     <section id="financiamiento" class="seccion">
       <div class="contenedor">
-        <h2 class="titulo-seccion">Financiamiento</h2>
-        <p class="texto-seccion">Te ayudamos a financiar tu auto con alternativas simples y transparentes. Consulta por las opciones disponibles según tu vehículo y tu situación.</p>
-        <div class="grid-tarjetas">
-          <div class="tarjeta-info">
-            <h3>Pie flexible</h3>
-            <p>Define el pie inicial que más te acomode y paga el saldo en cuotas cómodas.</p>
-          </div>
-          <div class="tarjeta-info">
-            <h3>Crédito automotriz</h3>
-            <p>Trabajamos con alternativas de crédito de distintas instituciones para que elijas la mejor.</p>
-          </div>
-          <div class="tarjeta-info">
-            <h3>Parte de pago</h3>
-            <p>Entrega tu auto actual como parte de pago y completa la diferencia con financiamiento.</p>
-          </div>
-          <div class="tarjeta-info">
-            <h3>Asesoría completa</h3>
-            <p>Revisamos tu caso, te explicamos cada paso y gestionamos la documentación contigo.</p>
-          </div>
-        </div>
+        <h2 class="titulo-seccion" id="fin-titulo">Financiamiento</h2>
+        <p class="texto-seccion" id="fin-texto">Te ayudamos a financiar tu auto con alternativas simples y transparentes. Consulta por las opciones disponibles según tu vehículo y tu situación.</p>
+        <div class="grid-tarjetas" id="fin-tarjetas"></div>
       </div>
     </section>
 
@@ -323,6 +306,19 @@
               <label for="c-anios">Años de experiencia (número)</label>
               <input type="text" id="c-anios" placeholder="12">
             </div>
+          </div>
+          <div class="campo">
+            <label for="c-fin-titulo">Título de la sección Financiamiento</label>
+            <input type="text" id="c-fin-titulo">
+          </div>
+          <div class="campo">
+            <label for="c-fin-texto">Texto de introducción de Financiamiento</label>
+            <textarea id="c-fin-texto" rows="2"></textarea>
+          </div>
+          <div class="campo">
+            <label>Etiquetas de financiamiento</label>
+            <div class="etiquetas-editor" id="fin-etiquetas-lista"></div>
+            <button type="button" class="boton boton-claro" id="btn-agregar-etiqueta">+ Agregar etiqueta</button>
           </div>
           <div class="acciones-form">
             <button type="submit" class="boton boton-claro">Guardar configuración</button>

@@ -58,7 +58,15 @@
     email: "r.nexus.19@gmail.com",
     direccion: "Santiago, Chile",
     clientesFelices: "+300",
-    aniosExperiencia: "12"
+    aniosExperiencia: "12",
+    finTitulo: "Financiamiento",
+    finTexto: "Te ayudamos a financiar tu auto con alternativas simples y transparentes. Consulta por las opciones disponibles según tu vehículo y tu situación.",
+    finTarjetas: [
+      { titulo: "Pie flexible", texto: "Define el pie inicial que más te acomode y paga el saldo en cuotas cómodas." },
+      { titulo: "Crédito automotriz", texto: "Trabajamos con alternativas de crédito de distintas instituciones para que elijas la mejor." },
+      { titulo: "Parte de pago", texto: "Entrega tu auto actual como parte de pago y completa la diferencia con financiamiento." },
+      { titulo: "Asesoría completa", texto: "Revisamos tu caso, te explicamos cada paso y gestionamos la documentación contigo." }
+    ]
   };
 
   var db = null;
@@ -178,6 +186,53 @@
     select.innerHTML = '<option value="">Todas las marcas</option>' +
       marcas.map(function (m) { return '<option value="' + escapar(m) + '">' + escapar(m) + '</option>'; }).join("");
     if (marcas.indexOf(valorActual) !== -1) select.value = valorActual;
+  }
+
+  function renderTarjetasFinanciamiento(lista) {
+    var cont = document.getElementById("fin-tarjetas");
+    if (!cont) return;
+    cont.innerHTML = lista.map(function (t) {
+      return '<div class="tarjeta-info"><h3>' + escapar(t.titulo) + '</h3><p>' + escapar(t.texto) + '</p></div>';
+    }).join("");
+  }
+
+  function filaEtiqueta(titulo, texto) {
+    var fila = document.createElement("div");
+    fila.className = "etiqueta-fila";
+
+    var entradaTitulo = document.createElement("input");
+    entradaTitulo.type = "text";
+    entradaTitulo.className = "etiqueta-titulo";
+    entradaTitulo.placeholder = "Título (ej: Pie flexible)";
+    entradaTitulo.value = titulo || "";
+
+    var entradaTexto = document.createElement("textarea");
+    entradaTexto.className = "etiqueta-texto";
+    entradaTexto.rows = 2;
+    entradaTexto.placeholder = "Descripción de la etiqueta";
+    entradaTexto.value = texto || "";
+
+    var quitar = document.createElement("button");
+    quitar.type = "button";
+    quitar.className = "boton boton-eliminar";
+    quitar.textContent = "Eliminar";
+    quitar.addEventListener("click", function () {
+      fila.parentNode.removeChild(fila);
+    });
+
+    fila.appendChild(entradaTitulo);
+    fila.appendChild(entradaTexto);
+    fila.appendChild(quitar);
+    return fila;
+  }
+
+  function renderEtiquetasForm(lista) {
+    var cont = document.getElementById("fin-etiquetas-lista");
+    if (!cont) return;
+    cont.innerHTML = "";
+    (lista || []).forEach(function (t) {
+      cont.appendChild(filaEtiqueta(t.titulo, t.texto));
+    });
   }
 
   function abrirDetalle(id) {
@@ -494,6 +549,12 @@
     document.getElementById("stat-clientes").textContent = config.clientesFelices || CONFIG_INICIAL.clientesFelices;
     document.getElementById("stat-anios").textContent = config.aniosExperiencia || CONFIG_INICIAL.aniosExperiencia;
 
+    document.getElementById("fin-titulo").textContent = config.finTitulo || CONFIG_INICIAL.finTitulo;
+    document.getElementById("fin-texto").textContent = config.finTexto || CONFIG_INICIAL.finTexto;
+    renderTarjetasFinanciamiento(
+      (config.finTarjetas && config.finTarjetas.length) ? config.finTarjetas : CONFIG_INICIAL.finTarjetas
+    );
+
     var parrafos = (config.nosotros || "").split("\n").filter(function (p) { return p.trim(); });
     document.getElementById("texto-nosotros").innerHTML = parrafos.map(function (p) {
       return "<p>" + escapar(p) + "</p>";
@@ -513,6 +574,9 @@
     document.getElementById("c-direccion").value = config.direccion || "";
     document.getElementById("c-clientes").value = config.clientesFelices || "";
     document.getElementById("c-anios").value = config.aniosExperiencia || "";
+    document.getElementById("c-fin-titulo").value = config.finTitulo || CONFIG_INICIAL.finTitulo;
+    document.getElementById("c-fin-texto").value = config.finTexto || CONFIG_INICIAL.finTexto;
+    renderEtiquetasForm((config.finTarjetas && config.finTarjetas.length) ? config.finTarjetas : CONFIG_INICIAL.finTarjetas);
   }
 
   function guardarConfigFormulario(evento) {
@@ -529,6 +593,15 @@
     config.direccion = document.getElementById("c-direccion").value.trim();
     config.clientesFelices = document.getElementById("c-clientes").value.trim();
     config.aniosExperiencia = document.getElementById("c-anios").value.trim();
+    config.finTitulo = document.getElementById("c-fin-titulo").value.trim();
+    config.finTexto = document.getElementById("c-fin-texto").value.trim();
+    var filasEtiquetas = document.querySelectorAll("#fin-etiquetas-lista .etiqueta-fila");
+    config.finTarjetas = [];
+    for (var k = 0; k < filasEtiquetas.length; k++) {
+      var titulo = filasEtiquetas[k].querySelector(".etiqueta-titulo").value.trim();
+      var texto = filasEtiquetas[k].querySelector(".etiqueta-texto").value.trim();
+      if (titulo || texto) config.finTarjetas.push({ titulo: titulo, texto: texto });
+    }
     db.collection("config").doc("sitio").set(config).then(function () {
       aplicarConfig();
       mensaje.className = "mensaje-formulario exito";
@@ -775,6 +848,11 @@
 
     var btnCatalogo = document.getElementById("btn-catalogo-ejemplo");
     if (btnCatalogo) btnCatalogo.addEventListener("click", cargarCatalogoEjemplo);
+
+    var btnAgregarEtiqueta = document.getElementById("btn-agregar-etiqueta");
+    if (btnAgregarEtiqueta) btnAgregarEtiqueta.addEventListener("click", function () {
+      document.getElementById("fin-etiquetas-lista").appendChild(filaEtiqueta("", ""));
+    });
 
     document.getElementById("btn-agregar-imagenes").addEventListener("click", function () {
       var campo = document.getElementById("v-imagen-url");

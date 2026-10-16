@@ -935,6 +935,39 @@ img {
   max-width: none;
 }
 
+.etiquetas-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.etiqueta-fila {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
+  gap: 8px;
+  align-items: start;
+  padding: 10px;
+  border: 1px solid #e2e5eb;
+  border-radius: 8px;
+  background-color: #fafbfc;
+}
+
+.etiqueta-fila .etiqueta-titulo,
+.etiqueta-fila .etiqueta-texto {
+  width: 100%;
+}
+
+.etiqueta-fila .etiqueta-texto {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.etiqueta-fila .boton-eliminar {
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
 .fila-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1118,6 +1151,10 @@ img {
   }
 
   .fila-form {
+    grid-template-columns: 1fr;
+  }
+
+  .etiqueta-fila {
     grid-template-columns: 1fr;
   }
 
